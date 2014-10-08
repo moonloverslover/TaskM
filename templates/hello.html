@@ -1,6 +1,17 @@
 {% extends "template.html" %}
 
 {% block content %}
- 	<h2> Hello</h2>>
+ 	<h2>Hello! You are new logged in.</h2>
+
+ 	<br/>
+
+ 	<h3>The sales list:</h3>
+ 	{% for item in sales %}
+ 	{{item.rep_name}} {{item.amount}} <br/>
+ 	{% endfor %}
+
+ 	<br/>
+
+ 	<a href="logout">Logout</a>
 
 {% endblock %}
