@@ -1,0 +1,64 @@
+{% extends "template.html" %}
+
+{% block content %}
+	<div class="logoutwrapper">
+		<p class="logout"><a href="/logout">Logout</a></p>
+	</div>
+	
+	<div class="taskscontainer">
+
+
+		<div class="addtaskwrapper">
+			<h3>Add a new task:</h3>
+			<table>
+			<form action="{{url_for('new_task')}}" method=post class=new-task>
+			<tr>
+				<td>
+				<label>Task Name:</label>
+				<input name="name" type="text">
+				</td>
+				<td>
+				<label>Due Data(mm/dd/yyyy):</label>
+				<input name="due_date" type="text" width="120px">
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<label>Priority:</label>
+				<select name="priority" width="100px">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+				</select>
+				</td>
+				<td>
+				&nbsp;
+				&nbsp;
+				<input class="button" type="submit" value="Save">
+				</td>
+			</tr>	
+			</form>
+			</table>
+		</div>
+
+		<div class="opentaskwrapper">
+		<h3>open</h3>
+		<p>{{task['name']}}</p>
+		</div>
+
+		<div class="closedtaskwrapper">
+		<h3>close</h3>
+		</div>
+
+ 	
+ 	</div>
+
+
+{% endblock %}

@@ -1,32 +1,50 @@
 from flask import *
 from functools import wraps
-import sqlite3
+import pymongo
 
-DATABASE = 'sales.db'
+from flask.ext.mongoengine import MongoEngine
+from mongoengine import connect
+
+
+
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
+app.config['DATABASE']
+
+"""
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'tasks',
+    'host': 'localhost',
+    'port': 27017
+}
+connect('tasks')
+
+db = MongoEngine(app)
+
+"""
+#db.createCollection(alltasks)
+#task = {'name':'CGM','date':'10/15/2014','priority':'1','status':1}
+#db.alltasks.insert(task)
 
 app.secret_key = 'my precious'
 
 
+
 def connect_db():
-	return sqlite3.connect(app.config['DATABASE'])
+	return pymongo.MongoClient()
 
-
-@app.route('/')
+@app.route('/',methods=['GET','POST'])
 def home():
-	return render_template('home.html')
-
-
-@app.route('/welcome')
-def welcome():
-	return render_template('welcome.html')
-
-@app.route('/logout')
-def logout():
-	session.pop('logged_in',None)
-	return redirect (url_for('log'))
+	error = None
+	if request.method == 'POST':
+		if request.form['username'] != 'BoyiJiang' or request.form['password'] != '843073':
+			error = 'Invalid username or password, please try again.'
+		else:
+			session['logged_in'] = True
+			return redirect(url_for('tasks'))
+	return render_template('home.html', error = error)
 
 def login_required(test):
 	@wraps(test)
@@ -34,29 +52,41 @@ def login_required(test):
 		if 'logged_in' in session:
 			return test(*args, **kwargs)
 		else:
-			flash('You need to login first.')
-			return redirect(url_for('log'))
-	return wrap
+			flash('You need to log in first.')
+			return redirect(url_for('home'))
+	return wrap	
 
-@app.route('/hello')
+
+@app.route('/tasks')
 @login_required
-def hello():
-	g.db = connect_db()
-	cur = g.db.execute('select rep_name,amount from reps')
-	sales = [dict(rep_name=row[0], amount=row[1]) for row in cur.fetchall()]
-	g.db.close()
-	return render_template('hello.html',sales=sales)
+def tasks():
+	task = db.alltasks.find_one()
 
-@app.route('/log', methods=['GET','POST'])
-def log():
-	error = None
-	if request.method == 'POST':
-		if request.form['username'] != 'admin' or request.form['username'] != 'admin':
-			error = 'try again'
-		else:
-			session['logged_in'] = True
-			return redirect(url_for('hello'))
-	return render_template('log.html', error = error)
+	return render_template('tasks.html',task=task)
+
+@app.route('/tasks')
+@login_required	
+def new_task():
+	name = request.form['name']
+	date = request.form['due_date']
+	priority = request.form['priority']
+	if not name and not date and not priority:
+		flash('You forgot the task name, due date and priority!')
+		return redirect(url_for('tasks'))
+	else:
+		task = {"name":name,"date":date,"priority":priority,"status":1}
+		db.alltasks.insert(task)
+		flash('New entry was successfully posted')	
+		return redirect(url_for('tasks'))	
+	
+
+@app.route('/logout')
+def logout():
+	session.pop('logged_in',None)
+	return redirect(url_for('home'))	
+
+
+
 
 
 
