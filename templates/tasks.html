@@ -18,7 +18,7 @@
 				<input name="name" type="text">
 				</td>
 				<td>
-				<label>Due Data(mm/dd/yyyy):</label>
+				<label>Due Date(mm/dd/yyyy):</label>
 				<input name="due_date" type="text" width="120px">
 				</td>
 			</tr>
@@ -48,13 +48,74 @@
 			</table>
 		</div>
 
+	 	{% for message in get_flashed_messages() %}
+ 		<div class="warning">
+ 			{{message}}
+ 		</div>
+ 		{% endfor %}
+
 		<div class="opentaskwrapper">
-		<h3>open</h3>
-		<p>{{task['name']}}</p>
+		<h3>Open tasks:</h3>
+		<table class="table" border=5>
+			<col width="500">
+            <col width="110">
+            <col width="110">
+            <col width="280">
+
+            <thead>
+			<tr>
+				<th>Task Name</th>
+				<th>Due Date</th>
+				<th>Priority</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+
+
+			<tbody>
+			{% for task in opentasks %}
+			<tr>
+				<td align="center">{{task.name}}</td>
+				<td align="center">{{task.due_date}}</td>
+				<td align="center">{{task.priority}}</td>
+				<td align="center"><a href="{{url_for('delete_task',task_id=task.id)}}">Delete</a>-<a href="{{url_for('mark_complete',task_id=task.id)}}">Mark as Complete</a></td>
+
+			</tr>
+			{% endfor %}
+			</tbody>
+		</table>
 		</div>
 
+
 		<div class="closedtaskwrapper">
-		<h3>close</h3>
+		<h3>Closed tasks:</h3>
+		<table class="table" border=5>
+			<col width="500">
+            <col width="110">
+            <col width="110">
+            <col width="280">
+
+            <thead>
+			<tr>
+				<th>Task Name</th>
+				<th>Due Date</th>
+				<th>Priority</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			{% for task in closedtasks %}
+			<tr>
+				<td align="center">{{task.name}}</td>
+				<td align="center">{{task.due_date}}</td>
+				<td align="center">{{task.priority}}</td>
+				<td align="center"><a href="{{url_for('delete_task',task_id=task.id)}}">Delete</a></td>
+			</tr>
+			{% endfor %}
+			</tbody>
+
+		</table>
 		</div>
 
  	
